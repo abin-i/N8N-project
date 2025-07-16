@@ -1,0 +1,68 @@
+{
+  "name": "Employee Email Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "path": "/send-employee-email",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "webhookId": "send-employee-email"
+    },
+    {
+      "parameters": {
+        "subject": "Hello {{ $json.name }} (Employee ID: {{ $json.employeeId }})",
+        "text": "Hi {{ $json.name }},\n\nThis is a confirmation that we've received your information.\n\nEmployee ID: {{ $json.employeeId }}\nDate: {{ $json.timestamp }}\n\nBest regards,\nHR Department",
+        "additionalFields": {}
+      },
+      "name": "Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [700, 300],
+      "credentials": {
+        "smtp": "YOUR_SMTP_CREDENTIALS_NAME"
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "return {\n  success: true,\n  message: 'Email processed successfully',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "name": "Success Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [[{ "node": "Webhook", "type": "main", "index": 0 }]]
+    },
+    "Webhook": {
+      "main": [[{ "node": "Email", "type": "main", "index": 0 }]]
+    },
+    "Email": {
+      "main": [[{ "node": "Success Response", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "webhookAuthentication": {
+      "type": "basicAuth",
+      "properties": {
+        "user": "admin",
+        "password": "securepassword123"
+      }
+    }
+  }
+}
