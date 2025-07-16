@@ -3,6 +3,7 @@ import { supabase } from './supabaseClient';
 import EmployeeForm from './components/EmployeeForm';
 import EmployeeTable from './components/EmployeeTable';
 import axios from 'axios';
+import Modal from './components/Modal';
 
 function App() {
   const [employees, setEmployees] = useState([]);
@@ -141,14 +142,16 @@ function App() {
       ) : (
         <>
           {showForm || editingEmployee ? (
-            <EmployeeForm
-              employee={editingEmployee}
-              onSubmit={editingEmployee ? handleUpdate : handleCreate}
-              onCancel={() => {
-                setEditingEmployee(null);
-                setShowForm(false);
-              }}
-            />
+            <Modal open={true} onClose={() => { setEditingEmployee(null); setShowForm(false); }}>
+              <EmployeeForm
+                employee={editingEmployee}
+                onSubmit={editingEmployee ? handleUpdate : handleCreate}
+                onCancel={() => {
+                  setEditingEmployee(null);
+                  setShowForm(false);
+                }}
+              />
+            </Modal>
           ) : (
             <div className="text-right mb-4">
               <button
